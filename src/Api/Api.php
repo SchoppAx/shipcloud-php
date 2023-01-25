@@ -31,10 +31,16 @@ abstract class Api implements ApiInterface
 
     public function execute($httpMethod, $uri, array $parameters = [], array $body = [])
     {
-        return $this->getClient()->{$httpMethod}("{$uri}", [
-            'query'       => $parameters,
-            'json' => $body
-        ]);
+        try { 
+            return $this->getClient()->{$httpMethod}("{$uri}", [
+                'query' => $parameters,
+                'json'  => $body
+            ]);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $response = $e->getResponse();
+            $responseBodyAsString = $response->getBody()->getContents();
+            throw new \Exception($responseBodyAsString);
+        } 
     }
 
     protected function getClient()
