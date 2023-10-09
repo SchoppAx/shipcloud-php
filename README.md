@@ -1,4 +1,4 @@
-# shipcloud-php - shipcloud API v1 PHP 5.4+ library
+# shipcloud-php - shipcloud API v1 PHP 7.2+ library
 
 An easy-to-use PHP package to communicate with [shipcloud's API](http://developers.shipcloud.io).
 
