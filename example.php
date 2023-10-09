@@ -10,14 +10,18 @@ $shipcloud = new ComyoMedia\Shipcloud\Shipcloud('api-key');
 // List all carriers
 // var_dump($shipcloud->carriers()->all());
 
-var_dump($shipcloud->addresses()->create([
-    'company'    => 'company name',
-    'first_name' => 'first name',
-    'last_name'  => 'lastname',
-    'street'     => 'street',
-    'street_no'  => 'street_no',
-    'zip_code'   => 'zip_code',
-    'city'       => 'city',
-    'country'    => 'country',
-    'phone'      => 'phone'
-]));
+try {
+    var_dump($shipcloud->addresses()->create([
+        'company'    => 'company name',
+        'first_name' => 'first name',
+        'last_name'  => 'lastname',
+        'street'     => 'street',
+        'street_no'  => 'street_no',
+        'zip_code'   => 'zip_code',
+        'city'       => 'city',
+        'country'    => 'country',
+        'phone'      => 'phone'
+    ]));
+} catch(\Exception $e) {
+    var_dump($e);
+}
