@@ -4,8 +4,8 @@ namespace ComyoMedia\Shipcloud\Api;
 
 class Carriers extends Api
 {
-    public function all()
-    {
-        return $this->get('carriers');
-    }
+  public function all(): array
+  {
+    return $this->get('carriers');
+  }
 }

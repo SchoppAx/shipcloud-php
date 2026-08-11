@@ -2,31 +2,27 @@
 
 namespace ComyoMedia\Shipcloud\Http;
 
-use GuzzleHttp\Query;
-use GuzzleHttp\Event\BeforeEvent;
-use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Client as GuzzleClient;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class Client extends \GuzzleHttp\Client implements ClientInterface
+class Client implements ClientInterface
 {
-    protected $apiKey;
+  private GuzzleClient $httpClient;
 
-    public function __construct($apiKey)
-    {
-        $this->apiKey = $apiKey;
+  public function __construct(string $apiKey)
+  {
+    $this->httpClient = new GuzzleClient([
+      'base_uri' => 'https://api.shipcloud.io/v1/',
+      'auth' => $apiKey,
+      'headers' => [
+        'Content-Type' => 'application/json'
+      ]
+    ]);
+  }
 
-        parent::__construct([
-            'base_uri' => 'https://api.shipcloud.io/v1/',
-            'auth' => [$apiKey, null],
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ]
-        ]);
-    }
-
-    public function send(RequestInterface $request, array $options = []): ResponseInterface
-    {
-        return parent::send($request, $options);
-    }
+  public function send(RequestInterface $request, array $options = []): ResponseInterface
+  {
+    return $this->httpClient->send($request, $options);
+  }
 }

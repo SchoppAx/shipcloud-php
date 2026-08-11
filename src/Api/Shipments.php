@@ -4,23 +4,23 @@ namespace ComyoMedia\Shipcloud\Api;
 
 class Shipments extends Api
 {
-    public function create($body, $parameters = [])
-    {
-        return $this->post('shipments', $parameters, $body);
-    }
+  public function create(array $body, $parameters = []): array
+  {
+    return $this->post('shipments', $parameters, $body);
+  }
 
-    public function find($id)
-    {
-        return $this->get("shipments/{$id}");
-    }
+  public function find(string $id): array
+  {
+    return $this->get("shipments/{$id}");
+  }
 
-    public function remove($id)
-    {
-        return $this->delete("shipments/{$id}");
-    }
+  public function remove(string $id): array
+  {
+    return $this->delete("shipments/{$id}");
+  }
 
-    public function all($parameters = [])
-    {
-        return $this->get('shipments', $parameters);
-    }
+  public function all(array $parameters = []): array
+  {
+    return $this->get('shipments', $parameters);
+  }
 }

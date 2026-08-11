@@ -3,48 +3,54 @@
 namespace ComyoMedia\Shipcloud\Api;
 
 use ComyoMedia\Shipcloud\Http\Client;
-use ComyoMedia\Shipcloud\ConfigInterface;
+use GuzzleHttp\Exception\ClientException;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class Api implements ApiInterface
 {
-    protected $apiKey;
+  protected string $apiKey;
 
-    public function __construct($apiKey)
-    {
-        $this->apiKey = $apiKey;
-    }
+  public function __construct(string $apiKey)
+  {
+    $this->apiKey = $apiKey;
+  }
 
-    public function get($uri = null, $parameters = [])
-    {
-        return json_decode($this->execute('get', $uri, $parameters)->getBody(), true);
-    }
+  public function get(string $uri = '', array $parameters = []): array
+  {
+    $body = (string) $this->execute('get', $uri, $parameters)->getBody();
+    return json_decode($body, true);
+  }
 
-    public function post($uri = null, $parameters = [], $body = [])
-    {
-        return json_decode($this->execute('post', $uri, $parameters, $body)->getBody(), true);
-    }
+  public function post(string $uri = '', array $parameters = [], array $body = []): array
+  {
+    $body = (string) $this->execute('post', $uri, $parameters, $body)->getBody();
+    return json_decode($body, true);
+  }
 
-    public function delete($uri = null, $parameters = [], $body = [])
-    {
-        return json_decode($this->execute('delete', $uri, $parameters, $body)->getBody(), true);
-    }
+  public function delete(string $uri = '', array $parameters = [], array $body = []): array
+  {
+    $body = (string) $this->execute('delete', $uri, $parameters, $body)->getBody();
+    return json_decode($body, true);
+  }
 
-    public function execute($httpMethod, $uri, array $parameters = [], array $body = [])
-    {
-        try { 
-            return $this->getClient()->{$httpMethod}("{$uri}", [
-                'query' => $parameters,
-                'json'  => $body
-            ]);
-        } catch (\GuzzleHttp\Exception\ClientException $e) {
-            $response = $e->getResponse();
-            $responseBodyAsString = $response->getBody()->getContents();
-            throw new \Exception($responseBodyAsString);
-        } 
-    }
+  public function execute(string $httpMethod, string $uri, array $parameters = [], array $body = []): ResponseInterface
+  {
+    try {
+      $client = $this->getClient();
 
-    protected function getClient()
-    {
-        return new Client($this->apiKey);
+      return $client->{$httpMethod}($uri, [
+        'query' => $parameters,
+        'json'  => $body
+      ]);
+    } catch (ClientException $e) {
+      $response = $e->getResponse();
+      $responseBodyAsString = $response->getBody()->getContents();
+      throw new \Exception($responseBodyAsString);
     }
+  }
+
+  protected function getClient(): Client
+  {
+    return new Client($this->apiKey);
+  }
 }

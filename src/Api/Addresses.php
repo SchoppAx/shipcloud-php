@@ -4,18 +4,18 @@ namespace ComyoMedia\Shipcloud\Api;
 
 class Addresses extends Api
 {
-    public function create($body, $parameters = [])
-    {
-        return $this->post('addresses', $parameters, $body);
-    }
+  public function create(array $body, array $parameters = []): array
+  {
+    return $this->post('addresses', $parameters, $body);
+  }
 
-    public function find($id)
-    {
-        return $this->get("addresses/{$id}");
-    }
+  public function find(string $id): array
+  {
+    return $this->get("addresses/{$id}");
+  }
 
-    public function all($parameters = [])
-    {
-        return $this->get('addresses', $parameters);
-    }
+  public function all(array $parameters = []): array
+  {
+    return $this->get('addresses', $parameters);
+  }
 }
