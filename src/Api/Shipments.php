@@ -4,7 +4,7 @@ namespace ComyoMedia\Shipcloud\Api;
 
 class Shipments extends Api
 {
-  public function create(array $body, $parameters = []): array
+  public function create(array $body, array $parameters = []): array
   {
     return $this->post('shipments', $parameters, $body);
   }
@@ -22,5 +22,10 @@ class Shipments extends Api
   public function all(array $parameters = []): array
   {
     return $this->get('shipments', $parameters);
+  }
+
+  public function update(string $id, array $body = [], array $parameters = []): array
+  {
+    return $this->put("shipments/{$id}", $parameters, $body);
   }
 }

@@ -14,8 +14,8 @@ class Addresses extends Api
     return $this->get("addresses/{$id}");
   }
 
-  public function all(array $parameters = []): array
+  public function all(): array
   {
-    return $this->get('addresses', $parameters);
+    return $this->get('addresses');
   }
 }
