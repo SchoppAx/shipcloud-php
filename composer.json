@@ -1,6 +1,6 @@
 {
     "name": "schoppax/shipcloud-php",
-    "description": "shipcloud API v1 PHP 7.2+ library",
+    "description": "shipcloud API v1 PHP 8.2+ library",
     "keywords": [
         "php",
         "shipcloud",
@@ -17,13 +17,12 @@
         }
     ],
     "require": {
-        "php": ">=7.2.0",
-        "guzzlehttp/guzzle": "~7.0"
+        "php": ">=8.2.0",
+        "guzzlehttp/guzzle": "^8.0"
     },
     "autoload": {
         "psr-4": {
             "ComyoMedia\\Shipcloud\\": "src/"
         }
-    },
-    "minimum-stability": "dev"
+    }
 }
