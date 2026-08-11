@@ -25,6 +25,17 @@
             "ComyoMedia\\Shipcloud\\": "src/"
         }
     },
+    "scripts": {
+        "start": [
+            "php -S localhost:8080"
+        ],
+        "test": [
+            "phpunit --configuration phpunit.xml"
+        ],
+        "analyse": [
+            "phpstan analyse -c phpstan.neon --no-progress"
+        ]
+    },
     "require-dev": {
         "phpstan/phpstan": "^2.2",
         "phpunit/phpunit": "^13.3"
