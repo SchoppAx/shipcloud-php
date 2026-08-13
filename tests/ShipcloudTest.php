@@ -10,9 +10,9 @@ final class ShipcloudTest extends TestCase
 {
     public function testMakeReturnsConfiguredClient(): void
     {
-        $gel = Shipcloud::make('test-key');
+        $shipcloud = Shipcloud::make('test-key');
 
-        $this->assertInstanceOf(Shipcloud::class, $gel);
-        $this->assertInstanceOf(Shipments::class, $gel->shipments());
+        $this->assertInstanceOf(Shipcloud::class, $shipcloud);
+        $this->assertInstanceOf(Shipments::class, $shipcloud->shipments());
     }
 }
