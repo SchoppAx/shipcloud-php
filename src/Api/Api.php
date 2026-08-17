@@ -3,7 +3,6 @@
 namespace ComyoMedia\Shipcloud\Api;
 
 use ComyoMedia\Shipcloud\Http\Client;
-use ComyoMedia\Shipcloud\Http\ClientInterface;
 use GuzzleHttp\Exception\ClientException;
 use Psr\Http\Message\ResponseInterface;
 
@@ -45,7 +44,7 @@ abstract class Api implements ApiInterface
     try {
       $client = $this->getClient();
 
-      return $client->request($httpMethod, $uri, [
+      return $client->{$httpMethod}($uri, [
         'query' => $parameters,
         'json'  => $body
       ]);
@@ -56,7 +55,7 @@ abstract class Api implements ApiInterface
     }
   }
 
-  protected function getClient(): ClientInterface
+  protected function getClient(): Client
   {
     return new Client($this->apiKey);
   }
