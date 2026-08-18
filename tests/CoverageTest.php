@@ -53,18 +53,18 @@ final class CoverageTest extends TestCase
         $this->shipments($client)->update('shipment-id', ['reference_number' => 'order-2'], ['sandbox' => true]);
 
         $this->assertSame([
-            ['post', 'addresses', ['query' => ['sandbox' => true], 'json' => ['name' => 'Ada']]],
-            ['get', 'addresses/address-id', ['query' => [], 'json' => []]],
-            ['get', 'addresses', ['query' => [], 'json' => []]],
-            ['get', 'carriers', ['query' => [], 'json' => []]],
-            ['get', 'pickup_requests', ['query' => [], 'json' => []]],
-            ['post', 'pickup_requests', ['query' => ['sandbox' => true], 'json' => ['date' => '2026-08-13']]],
-            ['post', 'shipment_quotes', ['query' => [], 'json' => ['from' => 'Berlin']]],
-            ['post', 'shipments', ['query' => ['sandbox' => true], 'json' => ['reference_number' => 'order-1']]],
-            ['get', 'shipments/shipment-id', ['query' => [], 'json' => []]],
-            ['delete', 'shipments/shipment-id', ['query' => [], 'json' => []]],
-            ['get', 'shipments', ['query' => ['page' => 2], 'json' => []]],
-            ['put', 'shipments/shipment-id', ['query' => ['sandbox' => true], 'json' => ['reference_number' => 'order-2']]],
+            ['POST', 'addresses', ['query' => ['sandbox' => true], 'json' => ['name' => 'Ada']]],
+            ['GET', 'addresses/address-id', ['query' => [], 'json' => []]],
+            ['GET', 'addresses', ['query' => [], 'json' => []]],
+            ['GET', 'carriers', ['query' => [], 'json' => []]],
+            ['GET', 'pickup_requests', ['query' => [], 'json' => []]],
+            ['POST', 'pickup_requests', ['query' => ['sandbox' => true], 'json' => ['date' => '2026-08-13']]],
+            ['POST', 'shipment_quotes', ['query' => [], 'json' => ['from' => 'Berlin']]],
+            ['POST', 'shipments', ['query' => ['sandbox' => true], 'json' => ['reference_number' => 'order-1']]],
+            ['GET', 'shipments/shipment-id', ['query' => [], 'json' => []]],
+            ['DELETE', 'shipments/shipment-id', ['query' => [], 'json' => []]],
+            ['GET', 'shipments', ['query' => ['page' => 2], 'json' => []]],
+            ['PUT', 'shipments/shipment-id', ['query' => ['sandbox' => true], 'json' => ['reference_number' => 'order-2']]],
         ], $client->calls);
     }
 
@@ -121,83 +121,100 @@ final class CoverageTest extends TestCase
                 new Response(201, [], 'send'),
             ])),
         ]);
-        $client = new Client('api-key');
-        $property = new ReflectionProperty(Client::class, 'client');
-        $property->setValue($client, $guzzleClient);
+
+        $client = new class('api-key', $guzzleClient) extends Client {
+            private GuzzleClient $guzzleClient;
+
+            public function __construct(string $apiKey, GuzzleClient $guzzleClient)
+            {
+                $this->guzzleClient = $guzzleClient;
+                parent::__construct($apiKey);
+            }
+
+            public function request(string $method, $uri = null, array $options = []): ResponseInterface
+            {
+                return $this->guzzleClient->request($method, $uri, $options);
+            }
+
+            public function send(RequestInterface $request, array $options = []): ResponseInterface
+            {
+                return $this->guzzleClient->send($request, $options);
+            }
+        };
 
         $this->assertSame('request', (string) $client->request('GET', 'https://example.test')->getBody());
         $this->assertSame('send', (string) $client->send(new Request('POST', 'https://example.test'))->getBody());
     }
 
-    private function addresses(ClientInterface $client): Addresses
+    private function addresses(Client $client): Addresses
     {
         return new class('api-key', $client) extends Addresses {
-            public function __construct(string $apiKey, private ClientInterface $client)
+            public function __construct(string $apiKey, private Client $client)
             {
                 parent::__construct($apiKey);
             }
 
-            protected function getClient(): ClientInterface
+            protected function getClient(): Client
             {
                 return $this->client;
             }
         };
     }
 
-    private function carriers(ClientInterface $client): Carriers
+    private function carriers(Client $client): Carriers
     {
         return new class('api-key', $client) extends Carriers {
-            public function __construct(string $apiKey, private ClientInterface $client)
+            public function __construct(string $apiKey, private Client $client)
             {
                 parent::__construct($apiKey);
             }
 
-            protected function getClient(): ClientInterface
+            protected function getClient(): Client
             {
                 return $this->client;
             }
         };
     }
 
-    private function pickupRequests(ClientInterface $client): PickupRequests
+    private function pickupRequests(Client $client): PickupRequests
     {
         return new class('api-key', $client) extends PickupRequests {
-            public function __construct(string $apiKey, private ClientInterface $client)
+            public function __construct(string $apiKey, private Client $client)
             {
                 parent::__construct($apiKey);
             }
 
-            protected function getClient(): ClientInterface
+            protected function getClient(): Client
             {
                 return $this->client;
             }
         };
     }
 
-    private function shipmentQuotes(ClientInterface $client): ShipmentQuotes
+    private function shipmentQuotes(Client $client): ShipmentQuotes
     {
         return new class('api-key', $client) extends ShipmentQuotes {
-            public function __construct(string $apiKey, private ClientInterface $client)
+            public function __construct(string $apiKey, private Client $client)
             {
                 parent::__construct($apiKey);
             }
 
-            protected function getClient(): ClientInterface
+            protected function getClient(): Client
             {
                 return $this->client;
             }
         };
     }
 
-    private function shipments(ClientInterface $client): Shipments
+    private function shipments(Client $client): Shipments
     {
         return new class('api-key', $client) extends Shipments {
-            public function __construct(string $apiKey, private ClientInterface $client)
+            public function __construct(string $apiKey, private Client $client)
             {
                 parent::__construct($apiKey);
             }
 
-            protected function getClient(): ClientInterface
+            protected function getClient(): Client
             {
                 return $this->client;
             }
@@ -205,7 +222,7 @@ final class CoverageTest extends TestCase
     }
 }
 
-final class RecordingClient implements ClientInterface
+final class RecordingClient extends Client
 {
     /** @var list<ResponseInterface|ClientException> */
     private array $responses;
@@ -217,6 +234,7 @@ final class RecordingClient implements ClientInterface
     public function __construct(array $responses)
     {
         $this->responses = $responses;
+        parent::__construct('api-key');
     }
 
     public function send(RequestInterface $request, array $options = []): ResponseInterface
@@ -224,7 +242,7 @@ final class RecordingClient implements ClientInterface
         throw new LogicException('send() is not expected in API tests.');
     }
 
-    public function request(string $method, string $uri, array $options = []): ResponseInterface
+    public function request(string $method, $uri = null, array $options = []): ResponseInterface
     {
         $this->calls[] = [$method, $uri, $options];
         $response = array_shift($this->responses);
